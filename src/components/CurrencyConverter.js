@@ -9,10 +9,19 @@ const CurrencyConverter = () => {
   const [chosenPrimaryCurrency, setChosenPrimaryCurrency ] = useState('BTC')
   const [chosenSecondaryCurrency, setChosenSecondaryCurrency ] = useState('BTC')
   const [amount, setAmount] = useState(1)
-  const [exchangeRate, setExchangeRate] = useState(0)
+  // const [exchangeRate, setExchangeRate] = useState(0)
+  // const [primaryCurrencyExchanged, setPrimaryCurrencyExchanged] = useState('BTC')
+  // const [secondaryCurrencyExchanged, setSecondaryCurrencyExchanged] = useState('BTC')
+
+  const [exchangedData, setExchangedData] = useState({
+    primaryCurrency: 'BTC',
+    secondaryCyrrency: 'BTC',
+    exchangeRate: 0
+
+  })
   const [result, setResult] = useState(0)
 
-  console.log(amount)
+  console.log(exchangedData)
 
   const convert = () => {
 
@@ -23,19 +32,26 @@ const options = {
   params: {from_currency: chosenPrimaryCurrency, function: 'CURRENCY_EXCHANGE_RATE', to_currency: chosenSecondaryCurrency},
   headers: {
     'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
-    'x-rapidapi-key': 'cec1cb9e4amshf0a6688364e5f06p1b2e12jsna57095c61d25'
+    'x-rapidapi-key': process.env.REACT_APP_RAPID_API_KEY
   }
 };
 
 axios.request(options).then((response) => {
 	console.log(response.data['Realtime Currency Exchange Rate']['8. Bid Price']);
-  setExchangeRate(response.data['Realtime Currency Exchange Rate']['8. Bid Price'])
+  // setExchangeRate(response.data['Realtime Currency Exchange Rate']['8. Bid Price'])
   setResult(response.data['Realtime Currency Exchange Rate']['8. Bid Price'] * amount)
+  // setPrimaryCurrencyExchanged(chosenPrimaryCurrency)
+  // setSecondaryCurrencyExchanged(chosenSecondaryCurrency)
+  setExchangedData({
+    primaryCurrency: chosenPrimaryCurrency,
+    secondaryCyrrency: chosenSecondaryCurrency,
+    exchangeRate: response.data['Realtime Currency Exchange Rate']['8. Bid Price']
+  })
 }).catch((error) => {
 	console.error(error);
 });
   }
-  console.log(exchangeRate)
+
   return (
     <div className="currency-converter">
      <h2>
@@ -76,29 +92,21 @@ axios.request(options).then((response) => {
          <tr>
            <td>Secondary Currency:</td>
            <td>
-             <input 
-               name="currency-amount-2"
-               value={result}
-               disabled={true}
-               
-             />
+           <input
+                                name="currency-amount-2"
+                                value={result}
+                                disabled={true}
+                            />
            </td>
            <td>
-             <select  value={setChosenSecondaryCurrency} name="currency-option-2" className="currency-options" onChange={(e) => setChosenSecondaryCurrency(e.target.value)}>
-             {
-                 currencies.map
-                 (
-                  (currency, _index) => (
-
-               <option key={_index}>
-                 {currency}
-               </option>
-                  )
-                 )
-
-               }
-
-             </select>
+           <select
+                                value={chosenSecondaryCurrency}
+                                name="currency-option-2"
+                                className="currency-options"
+                                onChange={(e) => setChosenSecondaryCurrency(e.target.value)}
+                            >
+                                {currencies.map((currency, _index) => (<option key={_index}>{currency}</option>))}
+                            </select>
            </td>
          </tr>
        </tbody>
@@ -106,9 +114,7 @@ axios.request(options).then((response) => {
 
      <button id="convert-button" onClick={convert}>Convert</button>
      </div>
-     <ExchangeRate exchangeRate={exchangeRate}
-       chosenPrimaryCurrency={chosenPrimaryCurrency}
-       chosenSecondaryCurrency={chosenSecondaryCurrency}
+     <ExchangeRate exchangedData={exchangedData}
      />
     </div>
   )

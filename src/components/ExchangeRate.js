@@ -1,13 +1,13 @@
 
-const ExchangeRate = ({exchangeRate, chosenPrimaryCurrency, chosenSecondaryCurrency }) => {
+const ExchangeRate = ({exchangedData }) => {
   return (
     <div className="exchange-rate">
       <h3>Exchange Rate</h3>
       <h1>
 
-     {exchangeRate}
+     {exchangedData.exchangeRate}
       </h1>
-      <p>{chosenPrimaryCurrency} to {chosenSecondaryCurrency}</p>
+      <p>{exchangedData.primaryCurrency} to {exchangedData.secondaryCurrency}</p>
     </div>
   )
 }
